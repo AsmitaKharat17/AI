@@ -1,0 +1,292 @@
+BFS
+from collections import deque
+
+class Graph:
+    def __init__(self, directed=True):
+        self.edges = {}
+        self.directed = directed
+
+    def add_edge(self, node1, node2, __reversed=False):
+        try: neighbors = self.edges[node1]
+        except KeyError: neighbors = set()
+        neighbors.add(node2)
+        self.edges[node1] = neighbors
+        if not self.directed and not __reversed: self.add_edge(node2, node1, True)
+
+    def neighbors(self, node):
+        try: return self.edges[node]
+        except KeyError: return []
+
+    def breadth_first_search(self, start, goal):
+        found, fringe, visited, came_from = False, deque([start]), set([start]), {start: None}
+        print('{:11s} | {}'.format('Expand Node', 'Fringe'))
+        print('--------------------')
+        print('{:11s} | {}'.format('-', start))
+        while not found and len(fringe):
+            current = fringe.pop()
+            print('{:11s}'.format(current), end=' | ')
+            if current == goal: found = True; break
+            for node in self.neighbors(current):
+                if node not in visited: visited.add(node); fringe.appendleft(node); came_from[node] = current
+            print(', '.join(fringe))
+        if found: print(); return came_from
+        else: print('No path from {} to {}'.format(start, goal))
+
+    @staticmethod
+    def print_path(came_from, goal):
+        parent = came_from[goal]
+        if parent:
+            Graph.print_path(came_from, parent)
+        else: print(goal, end='');return
+        print(' =>', goal, end='')
+
+
+    def __str__(self):
+        return str(self.edges)
+
+
+graph = Graph(directed=False)
+graph.add_edge('A', 'B')
+graph.add_edge('A', 'S')
+graph.add_edge('S', 'G')
+graph.add_edge('S', 'C')
+graph.add_edge('C', 'F')
+graph.add_edge('G', 'F')
+graph.add_edge('C', 'D')
+graph.add_edge('C', 'E')
+graph.add_edge('E', 'H')
+graph.add_edge('G', 'H')
+start, goal = 'A', 'H'
+traced_path = graph.breadth_first_search(start, goal)
+if (traced_path): print('Path:', end=' '); Graph.print_path(traced_path, goal);print()
+
+----------------------------------------------------------------------------------------------------
+DFS
+from collections import deque
+
+class Graph:
+    def __init__(self, directed=True):
+        self.edges = {}
+        self.directed = directed
+
+    def add_edge(self, node1, node2, __reversed=False):
+        try: neighbors = self.edges[node1]
+        except KeyError: neighbors = set()
+        neighbors.add(node2)
+        self.edges[node1] = neighbors
+        if not self.directed and not __reversed: self.add_edge(node2, node1, True)
+
+    def neighbors(self, node):
+        try: return self.edges[node]
+        except KeyError: return []
+
+    def depth_first_search(self, start, goal):
+        found, fringe, visited, came_from = False, deque([start]), set([start]), {start: None}
+        print('{:11s} | {}'.format('Expand Node', 'Fringe'))
+        print('--------------------')
+        print('{:11s} | {}'.format('-', start))
+        while not found and len(fringe):
+            current = fringe.pop()
+            print('{:11s}'.format(current), end=' | ')
+            if current == goal: found = True; break
+            for node in self.neighbors(current):
+                if node not in visited: visited.add(node); fringe.append(node); came_from[node] = current
+            print(', '.join(fringe))
+        if found: print(); return came_from
+        else: print('No path from {} to {}'.format(start, goal))
+
+    @staticmethod
+    def print_path(came_from, goal):
+        parent = came_from[goal]
+        if parent:
+            Graph.print_path(came_from, parent)
+        else: print(goal, end='');return
+        print(' =>', goal, end='')
+
+
+    def __str__(self):
+        return str(self.edges)
+
+
+graph = Graph(directed=False)
+graph.add_edge('A', 'B')
+graph.add_edge('A', 'S')
+graph.add_edge('S', 'G')
+graph.add_edge('S', 'C')
+graph.add_edge('C', 'F')
+graph.add_edge('G', 'F')
+graph.add_edge('C', 'D')
+graph.add_edge('C', 'E')
+graph.add_edge('E', 'H')
+graph.add_edge('G', 'H')
+start, goal = 'A', 'H'
+traced_path = graph.depth_first_search(start, goal)
+if (traced_path): print('Path:', end=' '); Graph.print_path(traced_path, goal);print()
+
+----------------------------------------------------------------------------------------------
+DLS
+graph = {
+    'A':['B','C'],
+    'B':['D','E'],
+    'C':['F','G'],
+    'D':['H','I'],
+    'E':['J','K'],
+    'F':['L','M'],
+    'G':['N','O'],
+    'H':[],
+    'I':[],
+    'J':[],
+    'K':[],
+    'L':[],
+    'M':[],
+    'N':[],
+    'O':[]
+}
+
+def DLS(start,goal,path,level,maxD):
+  print('\nCurrent level-->',level)
+  print('Goal node testing for',start)
+  path.append(start)
+  if start == goal:
+    print("Goal test successful")
+    return path
+  print('Goal node testing failed')
+  if level==maxD:
+    return False
+  print('\nExpanding the current node',start)
+  for child in graph[start]:
+    if DLS(child,goal,path,level+1,maxD):
+      return path
+    path.pop()
+  return False
+  
+  
+  
+start = 'A'
+goal = input('Enter the goal node:-')
+maxD = int(input("Enter the maximum depth limit:-"))
+print()
+path = list()
+res = DLS(start,goal,path,0,maxD)
+if(res):
+    print("Path to goal node available")
+    print("Path",path)
+else:
+    print("No path available for the goal node in given depth limit")
+            
+--------------------------------------------------------------------------------
+A*
+def aStarAlgo(start_node, stop_node):
+         
+        open_set = set(start_node)
+        closed_set = set()
+        g = {} 
+        parents = {}
+       
+        g[start_node] = 0
+        parents[start_node] = start_node
+         
+         
+        while len(open_set) > 0:
+            n = None
+
+            for v in open_set:
+                if n == None or g[v] + heuristic(v) < g[n] + heuristic(n):
+                    n = v
+             
+                     
+            if n == stop_node or Graph_nodes[n] == None:
+                pass
+            else:
+                for (m, weight) in get_neighbors(n):
+
+                    if m not in open_set and m not in closed_set:
+                        open_set.add(m)
+                        parents[m] = n
+                        g[m] = g[n] + weight
+ 
+                    else:
+                        if g[m] > g[n] + weight:
+                       
+                            g[m] = g[n] + weight
+                           
+                            parents[m] = n
+                   
+                            if m in closed_set:
+                                closed_set.remove(m)
+                                open_set.add(m)
+ 
+            if n == None:
+                print('Path does not exist!')
+                return None
+
+            if n == stop_node:
+                path = []
+ 
+                while parents[n] != n:
+                    path.append(n)
+                    n = parents[n]
+ 
+                path.append(start_node)
+ 
+                path.reverse()
+ 
+                print('Path found: {}'.format(path))
+                return path
+ 
+            open_set.remove(n)
+            closed_set.add(n)
+ 
+        print('Path does not exist!')
+        return None
+
+def get_neighbors(v):
+    if v in Graph_nodes:
+        return Graph_nodes[v]
+    else:
+        return None
+
+def heuristic(n):
+        # H_dist = {
+        #     'A': 10,
+        #     'B': 8,
+        #     'C': 5,
+        #     'D': 7,
+        #     'E': 3,
+        #     'J': 0,
+        #     'I': 1,
+        #     'F': 6,
+        #     'H': 3,
+        #     'G': 5,
+             
+        # }
+        H_dist = {
+            'A': 8,
+            'B': 5,
+            'C': 3,
+            'D': 0,
+        }
+ 
+        return H_dist[n]
+ 
+#Describe your graph here  
+# Graph_nodes = {
+#     'A': [('B', 6), ('F', 3)],
+#     'B': [('C', 3),('D', 2)],
+#     'C': [('D', 1),('E', 5)],
+#     'D': [('E', 8)],
+#     'E': [('I', 5),('J', 5)],
+#     'J': [('I', 3)],
+#     'I': [('G', 3),('H', 2)],
+#     'G': [('F', 1)],
+#     'H': [('F', 7)],
+#     'F': None
+     
+# }
+Graph_nodes = {
+    'A': [('B', 1), ('C', 2), ('D', 7)],
+    'B': [('C', 3)],
+    'C': [('D', 2)],
+    'D':None 
+}
+aStarAlgo('A', 'D')

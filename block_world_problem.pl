@@ -1,11 +1,9 @@
 block(a).
 block(b).
 block(c).
-
 place(p).
 place(q).
 place(r).
-
 solve(Initial, Final, Plan) :- strips(Initial, Final, Plan).
 strips(Initial, Final, Plan) :- strips(Initial, Final, [Initial], Plan).
 strips(Initial, Final, Visited, Plan) :-deepening_strips(1, Initial, Final, Visited, Plan).
@@ -22,3 +20,8 @@ perform(Source, move(Block, Destination), Target) :-substitute(on(Block, _), Sou
 substitute(_, [], _, []).
 substitute(A, [A|As], B, [B|Bs]) :- substitute(A, As, B, Bs), !.
 substitute(A,[X|As], B, [X|Bs]) :- substitute(A, As,B, Bs).
+
+
+%Input :-
+% solve([on(a,b), on(b,p), on(c,r)], [on(a,b), on(b,c), on(c,q)], Plam).
+% perform([on(a,b), on(b,p), on(c,r)], move(a,c), [on(a,c), on(b,p),on(c,r)]).
